@@ -44,15 +44,26 @@ correlation $AW=\sum_{i<j} w_i w_j \rho_{ij}$ on the asset-weighted Securities
 Ratio and on the asset-weighted HTM Ratio, both at quarterly frequency
 (`n_aw_quarters = 61`):
 
-| Regressor | Slope | Slope s.e. | t-stat | p-value | R² |
-|---|---|---|---|---|---|
-| Securities Ratio | 0.472 | 0.138 | 3.43 | 0.0011 | 0.166 |
-| HTM Ratio | 0.849 | 0.181 | 4.69 | 1.7e-05 | 0.271 |
+| Regressor | Slope | Slope s.e. | t-stat | p-value | R² | Paper slope (Table 9) | Paper R² |
+|---|---|---|---|---|---|---|---|
+| Securities Ratio | 0.472 | 0.138 | 3.43 | 0.0011 | 0.166 | 0.530 | 0.204 |
+| HTM Ratio | 0.849 | 0.181 | 4.69 | 1.7e-05 | 0.271 | 0.142 | 0.260 |
 
-**Verdict: reproduced.** Both slopes are positive and statistically significant
-at the 1% level, confirming the paper's claim that both the Securities Ratio
-and the HTM Ratio positively and significantly predict the level of
-asset-weighted return correlation among large banks.
+**Verdict: Securities Ratio regression partially reproduced, HTM Ratio
+regression partially reproduced.** Both slopes are positive and
+statistically significant at the 1% level, reproducing the paper's
+qualitative claim (Table 9) that the Securities Ratio and the HTM Ratio both
+positively and significantly predict the level of asset-weighted return
+correlation among large banks. The Securities Ratio slope (0.472 vs. the
+paper's 0.530, a 10.9% difference) and its R² (0.166 vs. 0.204) are close to
+the paper's values. The HTM Ratio slope (0.849) overshoots the paper's 0.142
+by a factor of about six, a material difference in magnitude, even though
+its R² (0.271 vs. 0.260) matches closely. Since the slope of a simple OLS
+regression equals $\mathrm{Cov}(x,y)/\mathrm{Var}(x)$, a matching R² with a
+differing slope implies the two samples' asset-weighted HTM ratio have a
+different variance; the cause of that variance difference between this
+replication's 2004-2023 regulatory-filing panel and the paper's underlying
+sample is not identified.
 
 ## Experiment 2 — Agent-Based Model: Correlation and Nonlinear Systemic Risk
 
@@ -214,6 +225,15 @@ the precise parameter combination responsible is not identified.
   recovery rates $\kappa_e,\kappa_l$) by the standard monotone fictitious
   default iteration, which converges to the same greatest clearing vector
   Rogers & Veraart (2013) construct.
+
+- **HTM Ratio regression slope (Table 9).** The asset-weighted HTM Ratio
+  slope (0.849) is about six times the paper's reported 0.142, even though
+  the regression's R² matches closely (0.271 vs. 0.260) and the sign and
+  1%-level significance reproduce the paper's claim. Because a simple OLS
+  slope scales inversely with the regressor's variance for a fixed R², this
+  points to a difference in the variance of the asset-weighted HTM Ratio
+  between this replication's panel and the paper's; the specific cause of
+  that variance difference is not identified.
 
 ## Not reproduced
 
