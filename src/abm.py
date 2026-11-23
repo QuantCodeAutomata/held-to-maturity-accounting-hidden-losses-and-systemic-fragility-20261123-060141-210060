@@ -195,7 +195,7 @@ def run_simulation(
         active_pair_mask = active[:, :, None] & active[:, None, :] & ~eye[None, :, :]
         masked_alpha = np.where(active_pair_mask, alpha, 0.0)
         row_sum = masked_alpha.sum(axis=-1, keepdims=True)
-        masked_alpha = np.where(row_sum > 0, masked_alpha, 1.0 / (n_banks - 1))
+        masked_alpha = np.where(row_sum > 0, masked_alpha, 1.0 / max(n_banks - 1, 1))
         probs = _dirichlet_batch(rng, masked_alpha)
         counts = _sample_counterparty_counts(rng, probs, config.N_BORROW_REQUESTS)
 
