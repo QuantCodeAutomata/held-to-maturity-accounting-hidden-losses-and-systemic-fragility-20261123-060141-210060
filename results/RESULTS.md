@@ -149,6 +149,20 @@ memory-decay $Q$ in Eq. 6; the exact Rogers & Veraart (2013) iteration order);
 the precise combination that reproduces the paper's $\rho=0.9$ tipping point
 is not identified.
 
+A further check tested whether simply strengthening this channel — sizing the
+borrowing request to the bank's full equity (Table 4's literal ratio applied
+to equity rather than to the capital-reserve shortfall) and investing the
+borrowed proceeds in the risky Portfolio so that leverage can build up
+episode over episode — reproduces the paper's $\rho=0.9$ jump. On a reduced
+run this instead drove leverage to the regulatory bound in nearly every
+episode and produced near-universal default (95% full-cascade runs) at every
+$\rho$, including $\rho=0$, destroying the correlation dependence the
+experiment measures rather than reproducing it; the change was reverted. This
+rules out "borrowing proportional to equity, fully re-invested every episode"
+as the missing mechanism and confirms that reproducing the paper's exact
+tipping point requires a network/leverage calibration this implementation
+could not recover from the text alone.
+
 Plot: `exp2_defaults_by_correlation.png`.
 
 ## Experiment 3 — Agent-Based Model: Timing of Loss Recognition (HTM vs MTM)
