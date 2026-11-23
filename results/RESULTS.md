@@ -116,17 +116,37 @@ at $\rho=0.9$, an 85% relative rise, not the ≈5x rise in mean defaults the
 paper reports from $\rho=0.8$ to $\rho=0.9$). This confirms the correlated-draw
 code (Eq. 7) is implemented correctly and is not the source of the gap: a
 smooth, well-behaved increase in joint-tail probability is exactly what it
-produces. The sharp, order-of-magnitude jump the paper reports between
-$\rho=0.8$ and $\rho=0.9$ must therefore come from a genuine tipping point in
-the interbank network's clearing dynamics (Eq. 9-11) — a critical mass of
-simultaneously-shocked banks overwhelming the network's loss-absorption
-capacity — rather than from the shock's correlation structure alone. Locating
-that tipping point exactly requires the network and leverage parameters the
-paper leaves unspecified (the borrowing-request count, Table 4 vs. Table 7;
-the belief memory-decay $Q$ in Eq. 6; the exact Rogers & Veraart (2013)
-iteration order), so the remaining gap is attributed to this calibration
-sensitivity rather than to a defect in the shock or clearing code, but the
-precise parameter combination that reproduces the paper's ρ=0.9 tipping point
+produces.
+
+A third, algebraic check identifies the specific mechanism that caps the
+first-round (direct, own-portfolio) default rate's dependence on $\rho$: by
+construction, $Z_i=\sqrt{\rho}\,\text{common}+\sqrt{1-\rho}\,\text{idio}$ has
+$\mathrm{Var}(Z_i)=\rho+(1-\rho)=1$ for every $\rho$ (Eq. 7), so each bank's
+own marginal shock distribution — and hence the probability that its own
+portfolio loss alone breaches its equity buffer — is exactly invariant to
+$\rho$. Raising $\rho$ therefore cannot raise the *expected number* of
+directly-shocked defaults; it can only redistribute the same total
+probability mass toward more simultaneous extreme draws, which is exactly
+what the run shows (std rising from 2.8 at $\rho=0$ to 19.3/22.8 at
+$\rho=0.8/0.9$, and a full 100/100 cascade appearing in 6.3%/7.2% of runs at
+$\rho=0.8/0.9$ versus never at $\rho=0$). Whether this redistributed tail mass
+shows up in the *mean* default count instead depends entirely on the
+interbank network's second-round contagion: a bank that fails from its own
+shock must also drag down solvent counterparties through unpaid interbank
+claims for the mean to rise sharply with $\rho$. In this implementation,
+interbank borrowing is sized to cover only a bank's capital-reserve shortfall
+($\mathrm{BORROW\_SIZE\_RATIO\_OF\_EQUITY}=1.00$ against the shortfall,
+Table 4), which keeps interbank claims a small fraction of each bank's
+balance sheet, so second-round contagion is weak relative to the first-round,
+correlation-invariant direct defaults; this limits the $\rho$-driven
+amplification of the *mean* default count to what is observed (8.09 → 8.46 →
+8.66) even though the tail statistics respond to $\rho$ exactly as the
+paper's mechanism predicts. The paper's substantially larger $\rho=0.9$ jump
+in the mean therefore requires either a stronger second-round contagion
+channel than Table 4's capital-reserve-shortfall borrowing rule produces, or
+network/leverage parameters the paper leaves unspecified (the belief
+memory-decay $Q$ in Eq. 6; the exact Rogers & Veraart (2013) iteration order);
+the precise combination that reproduces the paper's $\rho=0.9$ tipping point
 is not identified.
 
 Plot: `exp2_defaults_by_correlation.png`.
@@ -165,13 +185,18 @@ Under this normalization the experiment's directional claim holds, but the
 remaining gap to the paper's reported near-zero default count for 3 episodes
 is not explained by this normalization choice alone. As in Experiment 2, the
 synthetic check of Eq. 7's correlated-draw construction rules out the shock
-generator itself as the cause of the remaining gap; because splitting the
-total shock over more episodes keeps each episode's absolute draw further
-from the joint-tail region that triggers a network-wide cascade, the same
-under-specified network tipping point discussed in Experiment 2 is the most
-likely driver of why this run's decline (8.46 → 7.95) is far milder than the
-paper's near-total collapse of the effect (≈12.03 → ≈0.08) by 3 episodes, but
-the precise parameter combination responsible is not identified.
+generator itself as the cause of the remaining gap. The same mechanism
+identified in Experiment 2 explains why the decline here is so much milder
+than the paper's: the direct, first-round default rate from a bank's own
+portfolio shock depends on $\rho$ only through how often banks are hit
+*simultaneously*, not on the per-episode shock size itself staying large, so
+splitting $\Delta_\sigma$ across more, smaller episodes mainly thins the
+right tail of simultaneous extreme draws rather than collapsing the
+first-round default rate to zero; and because interbank exposure in this
+calibration is sized only to each bank's capital-reserve shortfall (Table 4),
+weak second-round contagion cannot turn a modest first-round decline into the
+paper's near-total collapse by 3 episodes. The precise parameter combination
+that would reproduce the paper's steep decline is not identified.
 
 ## Deviations from the paper
 
