@@ -102,29 +102,39 @@ Plot: `exp2_defaults_by_correlation.png`.
 
 ## Experiment 3 — Agent-Based Model: Timing of Loss Recognition (HTM vs MTM)
 
-File: `exp3_timing_defaults.csv`, same `N_RUNS_PAPER = 2000`, ρ=0.80, total
-shock magnitude held constant across 1, 2, and 3 shock episodes ending at
-t=300 (Table 7, p. 26).
+File: `exp3_shock_timing_defaults.csv`, same `N_RUNS_PAPER = 2000`, ρ=0.80,
+total shock magnitude held constant across 1, 2, and 3 shock episodes ending
+at t=300 (Table 7, p. 26).
 
 | Shock episodes | Mean defaults (this run) | Mean defaults (paper, p. 29) |
 |---|---|---|
 | 1 (HTM analogue) | 8.46 | ≈12.03 |
-| 2 | *(run in progress at the time this file was written; see below)* | ≈1.68 |
-| 3 (MTM analogue) | *(run in progress)* | ≈0.08 |
+| 2 | 8.12 | ≈1.68 |
+| 3 (MTM analogue) | 7.95 | ≈0.08 |
 
-This table is updated from `exp3_timing_defaults.csv` once produced by the
-final run; see the note in "Not reproduced" below if the file is absent at
-read time.
+Plot: `exp3_defaults_by_shock_timing.png`.
 
-**Verdict for the 1-shock row: not reproduced** in mean level, for the same
-reason as Experiment 2 (the 1-shock configuration is numerically identical to
-Experiment 2's ρ=0.8 case). The directional claim of the experiment — that
+**Verdict: partially reproduced.** The qualitative claim of the experiment —
 splitting the same total loss into more, smaller episodes lowers defaults
-versus concentrating it into one — is expected to hold given the convexity of
-the leverage constraint and the clearing mechanism (a loss spread over several
-episodes lets banks delever/absorb between episodes rather than face the full
-loss at once), but is confirmed only for the configurations whose CSV rows are
-available at the time of this report.
+versus concentrating it into one — holds: mean defaults fall monotonically
+from 8.46 (1 shock) to 8.12 (2 shocks) to 7.95 (3 shocks), confirming the sign
+of the HTM-vs-MTM effect. The magnitude is not reproduced: the paper reports a
+collapse to near zero by 3 episodes (≈0.08), while this run only shows a
+modest decline (-6% from 1 to 3 episodes). The 1-shock row repeats
+Experiment 2's ρ=0.8 result because the two configurations are numerically
+identical.
+
+The per-episode shock scale is normalized so that the *expected total*
+one-sided loss, not its variance, stays constant across different numbers of
+shock episodes: since each shock is $R=-|\Delta_\sigma\sigma Z|$ (Eq. 8), the
+sum of $k$ such draws scales linearly in $k$ for a fixed per-episode
+$\Delta_\sigma$, so each episode's $\Delta_\sigma$ is divided by $k$ (not by
+$\sqrt{k}$, which would be the right normalization only for a zero-mean sum).
+Under this normalization the experiment's directional claim holds, but the
+remaining gap to the paper's reported near-zero default count for 3 episodes
+is not explained by this normalization choice alone; the cause of the
+remaining magnitude gap is not further identified within the time available
+for this replication.
 
 ## Deviations from the paper
 
@@ -155,6 +165,14 @@ available at the time of this report.
   statistics. This is an interpretation of a detail the paper leaves open, not
   a value given by the paper, and it drives the quantitative mismatch
   described above.
+- **Splitting a fixed total shock across episodes (Experiment 3).** The paper
+  states only that "the same total shock magnitude" is spread over 1, 2 or 3
+  episodes (p. 29) without giving the per-episode scaling formula. Since each
+  episode's loss is one-sided ($R=-|\Delta_\sigma\sigma Z|$, Eq. 8), this
+  implementation divides $\Delta_\sigma$ by the number of episodes $k$ so the
+  *expected total* loss across the $k$ episodes matches the single-episode
+  case; this is an interpretation of a detail the paper leaves open, not a
+  formula the paper gives.
 - **Table 4 vs. Table 7 borrowing-request count.** Table 4 states a maximum of
   10.0 borrowing requests per bank per episode; Table 7 (the parameters used
   for the correlation and timing experiments) states 5. This implementation
@@ -174,9 +192,12 @@ available at the time of this report.
 ## Not reproduced
 
 - The paper's Table 8 and the accompanying Figure/Table for Experiment 3 are
-  only partially reproduced: see the two tables above. The mean-default level
-  reported by the paper is not matched by this implementation, for the reason
-  given above (unresolved episode time-scale of the shock equation).
+  only partially reproduced: see the Experiment 3 table above. The direction
+  of the effect (fewer defaults as the same total loss is split over more
+  episodes) is reproduced, but the mean-default levels and the size of the
+  drop across 1/2/3 episodes are not matched, for the reasons given above
+  (unresolved episode time-scale of the shock equation, and the unspecified
+  per-episode scaling formula for a fixed total shock).
 - Figure 7 (network centrality / intra-financial system assets and
   liabilities evolution under different network topologies) and Figure 8
   (illustrative HTM-vs-MTM asset-value diagram) are not reproduced as

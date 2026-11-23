@@ -1,0 +1,4 @@
+n_shock_episodes,regime,n_runs,n_banks,mean_defaults,std_defaults,median_defaults,max_defaults,elapsed_sec
+1,HTM (concentrated),2000,100,8.4615,19.31250900976168,0.0,100.0,660.6812679767609
+2,MTM (gradual),2000,100,8.1215,18.886478954364335,0.0,100.0,661.556104183197
+3,MTM (gradual),2000,100,7.9455,18.60428954689677,0.0,100.0,661.445436000824

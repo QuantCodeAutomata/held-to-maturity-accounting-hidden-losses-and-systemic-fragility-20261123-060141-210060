@@ -148,12 +148,15 @@ def run_simulation(
         used only for diagnostic plots.
 
     The total shock magnitude is held constant across different numbers of
-    shock episodes (paper, Experiment 3) by scaling `delta_sigma` for each
-    shock episode by 1/sqrt(len(shock_episodes)): since each shock draws an
-    independent correlated normal, splitting the shock into k episodes with
-    this scaling keeps the total shock variance equal to that of a single
-    episode of magnitude `delta_sigma` -- the natural reading of "the same
-    total shock magnitude" when the shock is itself a random draw.
+    shock episodes (paper, Experiment 3: "the same total shock magnitude" is
+    split across 1, 2 or 3 episodes). Each episode's loss is one-sided,
+    R = -|Delta_sigma * sigma * Z| (Eq. 8), so the k per-episode draws add up
+    rather than partially cancel: for k independent episodes each scaled by a
+    factor c, the expected total loss is k * c * sigma * E|Z|. Keeping that
+    sum equal to the single-episode magnitude delta_sigma * sigma * E|Z|
+    requires c = 1/k (not 1/sqrt(k), which instead holds the *variance* of a
+    zero-mean sum constant and is not the right normalization for a sum of
+    one-sided absolute shocks).
     """
     rng = np.random.default_rng(seed)
     sheets = _initial_balance_sheets(rng, n_runs, n_banks)
@@ -167,7 +170,7 @@ def run_simulation(
     alpha[:, eye] = 0.0  # a bank never lends to itself
 
     n_shocks = len(shock_episodes)
-    shock_delta_sigma = delta_sigma / np.sqrt(n_shocks)
+    shock_delta_sigma = delta_sigma / n_shocks
     last_shock_episode = max(shock_episodes)
     shock_set = {pre_shock_episodes - last_shock_episode + s for s in shock_episodes}
 
