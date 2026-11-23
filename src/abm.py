@@ -11,10 +11,10 @@ Monte Carlo repetitions of the same configuration run side by side as numpy
 arrays) rather than built on an agent-stepping framework such as `mesa`,
 because the paper's headline statistic -- the average number of defaults
 over thousands of independent runs of a 100-bank, 300-episode network -- is
-a Monte Carlo average that this project's compute budget can only reach
-with vectorized array operations; each bank is still carried as an
-individual state vector entry with its own balance sheet and belief matrix,
-matching the paper's agent-based description.
+a Monte Carlo average that is only practical to compute with vectorized
+array operations; each bank is still carried as an individual state vector
+entry with its own balance sheet and belief matrix, matching the paper's
+agent-based description.
 """
 
 from __future__ import annotations
