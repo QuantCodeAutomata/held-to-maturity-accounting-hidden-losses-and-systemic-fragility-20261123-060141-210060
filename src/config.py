@@ -43,13 +43,15 @@ EXP1_RATIO_START_YEAR = 2004
 EXP1_RATIO_END_YEAR = 2023
 
 # Pre/post-COVID windows for the pairwise correlation table (p. 11, Table 3).
-# The paper states the two regimes ("pre-COVID" vs. "post-COVID") but not
-# the exact calendar cut: not specified in the paper. Two full non-overlapping
-# two-year windows are used, bracketing the March 2020 COVID shock.
-EXP1_PRE_COVID_START = "2018-01-01"
-EXP1_PRE_COVID_END = "2019-12-31"
-EXP1_POST_COVID_START = "2021-01-01"
-EXP1_POST_COVID_END = "2022-12-31"
+# The paper distinguishes "before the pandemic" and "after the pandemic"
+# (Table 3 note) but does not give exact cutoff dates: not specified in the
+# paper. The WHO declared COVID-19 a pandemic on 2020-03-11, so the pre-COVID
+# window is the three full years before that date and the post-COVID window
+# is the remainder of the sample through the paper's 2023 sample end.
+EXP1_PRE_COVID_START = "2017-01-01"
+EXP1_PRE_COVID_END = "2020-02-29"
+EXP1_POST_COVID_START = "2020-03-01"
+EXP1_POST_COVID_END = "2023-12-31"
 EXP1_PAIRWISE_BANKS = BANKS_10  # paper reports this table for 10 banks, p. 11
 
 # Rolling window (trading days) used to build the quarterly asset-weighted
@@ -131,12 +133,14 @@ EXP3_RHO = 0.80  # fixed correlation for the timing comparison, p. 29
 EXP3_SHOCK_TIMINGS = (1, 2, 3)  # number of episodes the total shock is split across
 
 # Monte Carlo repetitions. The paper runs 2000 independent simulations per
-# configuration (p. 27, p. 29). Running the full 100-bank, 300-episode model
-# 2000 times for every one of the six configurations (3 in Experiment 2, 3 in
-# Experiment 3) does not finish inside the time available for this
-# replication; the executed run count is reduced and both counts are kept
-# here so the full paper configuration remains selectable with `--full`.
+# configuration (p. 27, p. 29). One simulated run of the 100-bank, 300-episode
+# model takes a fraction of a second, so the full paper count across all six
+# configurations (3 in Experiment 2, 3 in Experiment 3) completes well inside
+# the time available for this replication; the results reported in
+# results/RESULTS.md use `--full`, i.e. N_RUNS_PAPER. N_RUNS_RUN is kept as a
+# fast default (no `--full` flag) for quick smoke checks of the experiment
+# scripts, not for the reported results.
 N_RUNS_PAPER = 2000  # Monte Carlo repetitions per configuration, p. 27/29
-N_RUNS_RUN = 150  # executed repetitions per configuration (see results/RESULTS.md)
+N_RUNS_RUN = 150  # fast default for a quick smoke check, not the reported results
 
 RANDOM_SEED = 42  # seeds every experiment for reproducibility; not specified in the paper

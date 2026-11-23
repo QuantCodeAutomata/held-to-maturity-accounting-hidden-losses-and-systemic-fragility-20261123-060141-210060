@@ -19,6 +19,7 @@ matching the paper's agent-based description.
 
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass
 
 import numpy as np
@@ -85,7 +86,15 @@ def _dirichlet_batch(rng: np.random.Generator, alpha: np.ndarray) -> np.ndarray:
     numpy's `gamma` supports with a fully broadcast shape parameter.
     """
     gamma_draws = rng.gamma(shape=np.maximum(alpha, 1e-6))
-    return gamma_draws / gamma_draws.sum(axis=-1, keepdims=True)
+    total = gamma_draws.sum(axis=-1, keepdims=True)
+    # After many episodes of memory decay (Eq. 6) a row's concentrations can
+    # all underflow below double precision, so every Gamma(shape) draw in
+    # that row rounds to exactly 0.0; fall back to a uniform row instead of
+    # propagating 0/0 (NaN) into counterparty selection.
+    safe_total = np.where(total > 0, total, 1.0)
+    probs = gamma_draws / safe_total
+    uniform = np.full_like(probs, 1.0 / probs.shape[-1])
+    return np.where(total > 0, probs, uniform)
 
 
 def _sample_counterparty_counts(rng: np.random.Generator, probs: np.ndarray, n_requests: int) -> np.ndarray:
@@ -93,15 +102,15 @@ def _sample_counterparty_counts(rng: np.random.Generator, probs: np.ndarray, n_r
 
     Returns counts of shape (..., n_banks): how many of the n_requests
     borrowing requests of bank i (in a given run) were routed to each
-    possible counterparty j.
+    possible counterparty j. Counting n_requests i.i.d. categorical draws
+    from `probs` is exactly a Multinomial(n_requests, probs) draw, so
+    `Generator.multinomial` (batched over the leading (run, bank) axes) is
+    used instead of materializing n_requests one-hot draws per row, which
+    is algebraically identical and orders of magnitude cheaper for
+    n_runs x n_banks x n_banks arrays.
     """
-    cumulative = np.cumsum(probs, axis=-1)
-    cumulative[..., -1] = 1.0 + 1e-9  # guard against floating-point shortfall
-    draws = rng.random(probs.shape[:-1] + (n_requests,))
-    chosen = (draws[..., None] < cumulative[..., None, :]).argmax(axis=-1)
-    n_banks = probs.shape[-1]
-    one_hot = chosen[..., None] == np.arange(n_banks)
-    return one_hot.sum(axis=-2)
+    probs = probs / probs.sum(axis=-1, keepdims=True)  # guard against floating-point shortfall
+    return rng.multinomial(n_requests, probs)
 
 
 def _build_relative_liabilities(loan_matrix: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -226,7 +235,14 @@ def run_simulation(
 
         if episode % record_every == 0 or episode == pre_shock_episodes:
             survivor_equity = np.where(~defaulted, portfolio + reserve - deposits, np.nan)
-            equity_path.append(np.nanmean(survivor_equity, axis=-1))
+            any_survivor = (~defaulted).any(axis=-1)
+            with np.errstate(invalid="ignore"), warnings.catch_warnings():
+                warnings.filterwarnings("ignore", message="Mean of empty slice")
+                mean_equity = np.nanmean(survivor_equity, axis=-1)
+            # A run in which every bank has defaulted has no survivors to
+            # average; record NaN explicitly instead of letting nanmean warn
+            # on an all-NaN slice.
+            equity_path.append(np.where(any_survivor, mean_equity, np.nan))
 
     n_defaults = defaulted.sum(axis=-1).astype(float)
     return SimulationResult(

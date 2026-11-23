@@ -1,0 +1,30 @@
+{
+  "pairwise_correlation": {
+    "pre_covid_mean_correlation": 0.7447057069604873,
+    "post_covid_mean_correlation": 0.8194785779781946,
+    "n_banks": 10
+  },
+  "ols_asset_weighted_correlation_on_securities_ratio": {
+    "n_obs": 61,
+    "intercept": 0.22525762367795063,
+    "slope": 0.4721435115079436,
+    "intercept_se": 0.031087231781687204,
+    "slope_se": 0.13762448337443522,
+    "intercept_t": 7.245985273305836,
+    "slope_t": 3.4306650962923633,
+    "slope_pvalue": 0.001105277330048207,
+    "r_squared": 0.16630708364189883
+  },
+  "ols_asset_weighted_correlation_on_htm_ratio": {
+    "n_obs": 61,
+    "intercept": 0.22799149473784733,
+    "slope": 0.8485203748110276,
+    "intercept_se": 0.022272013428262166,
+    "slope_se": 0.18100287738976087,
+    "intercept_t": 10.236680912222177,
+    "slope_t": 4.687883347754048,
+    "slope_pvalue": 1.6751194454254974e-05,
+    "r_squared": 0.2713913055442392
+  },
+  "n_aw_quarters": 61
+}
