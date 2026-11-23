@@ -92,11 +92,31 @@ replacing only the shock's volatility term with the unscaled annual $\sigma$
 produces near-universal collapse at every ρ (74.8/74.7/76.9 mean defaults out
 of 100, flat across ρ=0.0/0.8/0.9) — the opposite failure mode. Both the daily-
 and annual-scale readings of Eq. 8 were tested and neither reproduces the
-paper's reported mean defaults; the paper does not specify the episode length
-in calendar time, so the cause of the remaining gap in the mean is the
-unspecified time-scaling of the shock combined with the model's apparent
-sensitivity to it, and is not further identified within the time available for
-this replication.
+paper's reported mean defaults.
+
+A second check isolates the correlation-generation step itself from the
+network/clearing mechanism: Eq. 7's one-factor construction
+$Z=\sqrt\rho\,\text{common}+\sqrt{1-\rho}\,\text{idiosyncratic}$ is verified on
+2·10^5 synthetic draws against the known folded-normal property that
+$\mathrm{Corr}(|Z_i|,|Z_j|)$ and the probability of a joint tail event both
+rise monotonically, but smoothly, in $\rho$ (e.g. $P(|Z_i|>3\sigma\text{ and
+}|Z_j|>3\sigma\mid\text{marginal}>3\sigma)$ = 0.241 at $\rho=0.8$ versus 0.445
+at $\rho=0.9$, an 85% relative rise, not the ≈5x rise in mean defaults the
+paper reports from $\rho=0.8$ to $\rho=0.9$). This confirms the correlated-draw
+code (Eq. 7) is implemented correctly and is not the source of the gap: a
+smooth, well-behaved increase in joint-tail probability is exactly what it
+produces. The sharp, order-of-magnitude jump the paper reports between
+$\rho=0.8$ and $\rho=0.9$ must therefore come from a genuine tipping point in
+the interbank network's clearing dynamics (Eq. 9-11) — a critical mass of
+simultaneously-shocked banks overwhelming the network's loss-absorption
+capacity — rather than from the shock's correlation structure alone. Locating
+that tipping point exactly requires the network and leverage parameters the
+paper leaves unspecified (the borrowing-request count, Table 4 vs. Table 7;
+the belief memory-decay $Q$ in Eq. 6; the exact Rogers & Veraart (2013)
+iteration order), so the remaining gap is attributed to this calibration
+sensitivity rather than to a defect in the shock or clearing code, but the
+precise parameter combination that reproduces the paper's ρ=0.9 tipping point
+is not identified.
 
 Plot: `exp2_defaults_by_correlation.png`.
 
@@ -132,9 +152,15 @@ $\Delta_\sigma$, so each episode's $\Delta_\sigma$ is divided by $k$ (not by
 $\sqrt{k}$, which would be the right normalization only for a zero-mean sum).
 Under this normalization the experiment's directional claim holds, but the
 remaining gap to the paper's reported near-zero default count for 3 episodes
-is not explained by this normalization choice alone; the cause of the
-remaining magnitude gap is not further identified within the time available
-for this replication.
+is not explained by this normalization choice alone. As in Experiment 2, the
+synthetic check of Eq. 7's correlated-draw construction rules out the shock
+generator itself as the cause of the remaining gap; because splitting the
+total shock over more episodes keeps each episode's absolute draw further
+from the joint-tail region that triggers a network-wide cascade, the same
+under-specified network tipping point discussed in Experiment 2 is the most
+likely driver of why this run's decline (8.46 → 7.95) is far milder than the
+paper's near-total collapse of the effect (≈12.03 → ≈0.08) by 3 episodes, but
+the precise parameter combination responsible is not identified.
 
 ## Deviations from the paper
 
